@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Member {
+  id              String        @id @default(uuid())
+  memberNumber    String        @unique
+  firstName       String
+  lastName        String
+  email           String        @unique
+  phone           String        @unique
+  nationalId      String        @unique
+  kraPin          String?
+  employer        String?
+  password        String
+  role            Role          @default(MEMBER)
+  status          MemberStatus  @default(ACTIVE)
+  joinedAt        DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  nextOfKin       NextOfKin?
+  savings         Saving[]
+  loans           Loan[]
+  guarantees      LoanGuarantor[]
+  shares          Share[]
+  dividends       Dividend[]
+  notifications   Notification[]
+  transactions    Transaction[]
+}
+
+model NextOfKin {
+  id           String   @id @default(uuid())
+  memberId     String   @unique
+  fullName     String
+  relationship String
+  phone        String
+  nationalId   String
+  createdAt    DateTime @default(now())
+
+  member       Member   @relation(fields: [memberId], references: [id])
+}
+
+model Share {
+  id          String      @id @default(uuid())
+  memberId    String
+  units       Int
+  pricePerUnit Float      @default(100)
+  totalAmount Float
+  type        ShareType
+  reference   String?
+  createdAt   DateTime    @default(now())
+
+  member      Member      @relation(fields: [memberId], references: [id])
+}
+
+model Saving {
+  id          String      @id @default(uuid())
+  memberId    String
+  amount      Float
+  balance     Float
+  type        SavingType
+  reference   String?
+  channel     Channel     @default(CASH)
+  createdAt   DateTime    @default(now())
+
+  member      Member      @relation(fields: [memberId], references: [id])
+}
+
+model LoanProduct {
+  id              String    @id @default(uuid())
+  name            String
+  interestRate    Float
+  maxAmount       Float
+  minAmount       Float
+  maxRepayMonths  Int
+  requiresGuarantor Boolean @default(true)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+
+
+}
+
+model Loan {
+  id              String        @id @default(uuid())
+  memberId        String
+  loanProduct     String
+  amount          Float
+  balance         Float
+  interestRate    Float
+  status          LoanStatus    @default(PENDING)
+  purpose         String
+  disbursedAt     DateTime?
+  dueDate         DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  member          Member        @relation(fields: [memberId], references: [id])
+  guarantors      LoanGuarantor[]
+  repayments      Repayment[]
+  penalties       Penalty[]
+}
+
+model LoanGuarantor {
+  id               String          @id @default(uuid())
+  loanId           String
+  guarantorId      String
+  guaranteedAmount Float
+  status           GuarantorStatus @default(PENDING)
+  respondedAt      DateTime?
+  createdAt        DateTime        @default(now())
+
+  loan             Loan            @relation(fields: [loanId], references: [id])
+  guarantor        Member          @relation(fields: [guarantorId], references: [id])
+}
+
+model Repayment {
+  id          String    @id @default(uuid())
+  loanId      String
+  amount      Float
+  channel     Channel   @default(CASH)
+  reference   String?
+  createdAt   DateTime  @default(now())
+
+  loan        Loan      @relation(fields: [loanId], references: [id])
+}
+
+model Penalty {
+  id          String    @id @default(uuid())
+  loanId      String
+  amount      Float
+  reason      String
+  isPaid      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  loan        Loan      @relation(fields: [loanId], references: [id])
+}
+
+model Dividend {
+  id          String    @id @default(uuid())
+  memberId    String
+  year        Int
+  amount      Float
+  isPaid      Boolean   @default(false)
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  member      Member    @relation(fields: [memberId], references: [id])
+}
+
+model Transaction {
+  id          String            @id @default(uuid())
+  memberId    String
+  amount      Float
+  type        TransactionType
+  channel     Channel           @default(CASH)
+  reference   String?
+  description String?
+  status      TransactionStatus @default(SUCCESS)
+  createdAt   DateTime          @default(now())
+
+  member      Member            @relation(fields: [memberId], references: [id])
+}
+
+model Notification {
+  id          String              @id @default(uuid())
+  memberId    String
+  type        NotificationType
+  message     String
+  channel     NotificationChannel
+  isRead      Boolean             @default(false)
+  sentAt      DateTime            @default(now())
+
+  member      Member              @relation(fields: [memberId], references: [id])
+}
+
+enum Role {
+  MEMBER
+  TELLER
+  LOAN_OFFICER
+  ADMIN
+  CEO
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DISBURSED
+  COMPLETED
+  DEFAULTED
+}
+
+enum GuarantorStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+enum SavingType {
+  DEPOSIT
+  WITHDRAWAL
+  INTEREST
+}
+
+enum ShareType {
+  PURCHASE
+  TRANSFER
+  DIVIDEND_REINVESTMENT
+}
+
+enum Channel {
+  CASH
+  MPESA
+  BANK
+}
+
+enum TransactionType {
+  SAVINGS_DEPOSIT
+  SAVINGS_WITHDRAWAL
+  LOAN_DISBURSEMENT
+  LOAN_REPAYMENT
+  SHARE_PURCHASE
+  DIVIDEND_PAYMENT
+  PENALTY_PAYMENT
+}
+
+enum TransactionStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  REVERSED
+}
+
+enum NotificationType {
+  LOAN_APPROVED
+  LOAN_REJECTED
+  LOAN_DISBURSED
+  REPAYMENT_DUE
+  REPAYMENT_RECEIVED
+  DEPOSIT_RECEIVED
+  GUARANTOR_REQUEST
+  DIVIDEND_PAID
+  GENERAL
+}
+
+enum NotificationChannel {
+  SMS
+  EMAIL
+  IN_APP
+}
