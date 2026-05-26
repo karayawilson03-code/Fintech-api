@@ -10,6 +10,9 @@ import loansRoutes from "./modules/loans/loans.routes";
 import reconciliationRoutes from "./modules/reconciliation/reconciliation.routes";
 import membersRoutes from "./modules/members/members.routes";
 import adminRoutes from "./modules/admin/admin.routes";
+import guarantorsRoutes from "./modules/guarantors/guarantors.routes";
+import statementsRoutes from "./modules/statements/statements.routes";
+import penaltiesRoutes from "./modules/penalties/penalties.routes";
 
 dotenv.config();
 
@@ -38,6 +41,9 @@ app.use("/api/loans", loansRoutes);
 app.use("/api/reconciliation", reconciliationRoutes);
 app.use("/api/members", membersRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/guarantors", guarantorsRoutes);
+app.use("/api/statements", statementsRoutes);
+app.use("/api/penalties", penaltiesRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
