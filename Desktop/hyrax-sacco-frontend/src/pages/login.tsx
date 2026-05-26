@@ -39,7 +39,7 @@ export default function Login() {
       <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "400px", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
         
         {/* Color bar top */}
-        <div style={{ display: "flex", height: "6px" }}>
+        <div style={{ display: "flex", height: "12px" }}>
           <div style={{ flex: 1, background: GREEN }} />
           <div style={{ flex: 1, background: RED }} />
           <div style={{ flex: 1, background: ORANGE }} />
@@ -67,22 +67,22 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: "1rem" }}>
-              <label style={{ fontSize: "13px", color: GREEN, fontWeight: 600 }}>Email address</label>
+              <label style={{ fontSize: "14px", color: GREEN, fontWeight: 600 }}>Email address</label>
               <input 
                 type="email" 
                 value={form.email} 
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box" }} 
+                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" }} 
                 required 
               />
             </div>
             <div style={{ marginBottom: "1.25rem" }}>
-              <label style={{ fontSize: "13px", color: GREEN, fontWeight: 600 }}>Password</label>
+              <label style={{ fontSize: "14px", color: GREEN, fontWeight: 600 }}>Password</label>
               <input 
                 type="password" 
                 value={form.password} 
                 onChange={e => setForm({ ...form, password: e.target.value })}
-                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box" }} 
+                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" }} 
                 required 
               />
             </div>
@@ -103,7 +103,7 @@ export default function Login() {
         </div>
 
         {/* Color bar bottom */}
-        <div style={{ display: "flex", height: "6px" }}>
+        <div style={{ display: "flex", height: "12px" }}>
           <div style={{ flex: 1, background: BLACK }} />
           <div style={{ flex: 1, background: ORANGE }} />
           <div style={{ flex: 1, background: RED }} />

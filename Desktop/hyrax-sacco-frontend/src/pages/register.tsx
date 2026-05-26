@@ -11,10 +11,10 @@ const BLACK = "#1A1A1A";
 const inputStyle = {
   width: "100%", padding: "9px 12px", marginTop: "4px",
   borderRadius: "6px", border: "1.5px solid #ddd",
-  fontSize: "14px", boxSizing: "border-box" as const, outline: "none"
+  fontSize: "14px", boxSizing: "border-box" as const, outline: "none", background: "white"
 };
 
-const labelStyle = { fontSize: "13px", color: GREEN, fontWeight: 600 as const };
+const labelStyle = { fontSize: "14px", color: GREEN, fontWeight: 600 as const };
 
 export default function Register() {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export default function Register() {
       <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "500px", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
 
         {/* Color bar top */}
-        <div style={{ display: "flex", height: "6px" }}>
+        <div style={{ display: "flex", height: "12px" }}>
           <div style={{ flex: 1, background: GREEN }} />
           <div style={{ flex: 1, background: RED }} />
           <div style={{ flex: 1, background: ORANGE }} />
@@ -169,7 +169,7 @@ export default function Register() {
         </div>
 
         {/* Color bar bottom */}
-        <div style={{ display: "flex", height: "6px" }}>
+        <div style={{ display: "flex", height: "12px" }}>
           <div style={{ flex: 1, background: BLACK }} />
           <div style={{ flex: 1, background: ORANGE }} />
           <div style={{ flex: 1, background: RED }} />
