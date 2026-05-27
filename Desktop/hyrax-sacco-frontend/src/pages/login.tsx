@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import { loginMember } from "../api/auth";
 import Logo from "../components/logo";
 
@@ -24,8 +25,8 @@ export default function Login() {
       localStorage.setItem("member", JSON.stringify(res.data.data.member));
       navigate("/dashboard");
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Login failed");
       } else {
         setError("Login failed");
       }
@@ -37,7 +38,7 @@ export default function Login() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f7f0", padding: "2rem 0" }}>
       <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "400px", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
-        
+
         {/* Color bar top */}
         <div style={{ display: "flex", height: "12px" }}>
           <div style={{ flex: 1, background: GREEN }} />
@@ -67,27 +68,33 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: "1rem" }}>
-              <label style={{ fontSize: "14px", color: GREEN, fontWeight: 600 }}>Email address</label>
-              <input 
-                type="email" 
-                value={form.email} 
+              <label style={{ fontSize: "14px", color: GREEN, fontWeight: 600 }}>
+                Email address
+              </label>
+              <input
+                type="email"
+                value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" }} 
-                required 
+                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" }}
+                required
               />
             </div>
+
             <div style={{ marginBottom: "1.25rem" }}>
-              <label style={{ fontSize: "14px", color: GREEN, fontWeight: 600 }}>Password</label>
-              <input 
-                type="password" 
-                value={form.password} 
+              <label style={{ fontSize: "14px", color: GREEN, fontWeight: 600 }}>
+                Password
+              </label>
+              <input
+                type="password"
+                value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
-                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" }} 
-                required 
+                style={{ width: "100%", padding: "10px 12px", marginTop: "4px", borderRadius: "6px", border: "1.5px solid #ddd", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" }}
+                required
               />
             </div>
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               disabled={loading}
               style={{ width: "100%", padding: "11px", background: loading ? "#888" : BLACK, color: "white", border: "none", borderRadius: "6px", fontSize: "14px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
             >
@@ -97,7 +104,10 @@ export default function Login() {
 
           <div style={{ textAlign: "center", marginTop: "1rem", paddingTop: "12px", borderTop: "1px solid #eee" }}>
             <p style={{ fontSize: "13px", color: "#666" }}>
-              No account? <Link to="/register" style={{ color: ORANGE, fontWeight: 600 }}>Register here</Link>
+              No account?{" "}
+              <Link to="/register" style={{ color: ORANGE, fontWeight: 600 }}>
+                Register here
+              </Link>
             </p>
           </div>
         </div>

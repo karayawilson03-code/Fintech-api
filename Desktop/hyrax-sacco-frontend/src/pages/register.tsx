@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import { registerMember } from "../api/auth";
 import Logo from "../components/logo";
 
@@ -11,7 +12,9 @@ const BLACK = "#1A1A1A";
 const inputStyle = {
   width: "100%", padding: "9px 12px", marginTop: "4px",
   borderRadius: "6px", border: "1.5px solid #ddd",
-  fontSize: "14px", boxSizing: "border-box" as const, outline: "none", background: "white"
+  fontSize: "14px", boxSizing: "border-box" as const,
+  outline: "none", background: "white",
+  color: "#1A1A1A",
 };
 
 const labelStyle = { fontSize: "14px", color: GREEN, fontWeight: 600 as const };
@@ -26,19 +29,24 @@ export default function Register() {
     nextOfKin: { fullName: "", relationship: "", phone: "", nationalId: "" }
   });
 
-  const update = (field: string, value: string) => setForm({ ...form, [field]: value });
-  const updateKin = (field: string, value: string) => setForm({ ...form, nextOfKin: { ...form.nextOfKin, [field]: value } });
+  const update = (field: string, value: string) =>
+    setForm({ ...form, [field]: value });
+
+  const updateKin = (field: string, value: string) =>
+    setForm({ ...form, nextOfKin: { ...form.nextOfKin, [field]: value } });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      await registerMember(form);
-      navigate("/");
+      const res = await registerMember(form);
+      localStorage.setItem("token", res.data.data.token);
+      localStorage.setItem("member", JSON.stringify(res.data.data.member));
+      navigate("/dashboard");
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Registration failed");
       } else {
         setError("Registration failed");
       }
@@ -91,44 +99,92 @@ export default function Register() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={labelStyle}>First name</label>
-                <input value={form.firstName} onChange={e => update("firstName", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.firstName}
+                  onChange={e => update("firstName", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={labelStyle}>Last name</label>
-                <input value={form.lastName} onChange={e => update("lastName", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.lastName}
+                  onChange={e => update("lastName", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
             </div>
 
             <div style={{ marginBottom: "0.75rem" }}>
               <label style={labelStyle}>Email address</label>
-              <input type="email" value={form.email} onChange={e => update("email", e.target.value)} style={inputStyle} />
+              <input
+                type="email"
+                value={form.email}
+                onChange={e => update("email", e.target.value)}
+                style={inputStyle}
+                required
+              />
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={labelStyle}>Phone</label>
-                <input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="0712345678" style={inputStyle} />
+                <input
+                  value={form.phone}
+                  onChange={e => update("phone", e.target.value)}
+                  placeholder="0712345678"
+                  style={inputStyle}
+                  required
+                />
               </div>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={labelStyle}>National ID</label>
-                <input value={form.nationalId} onChange={e => update("nationalId", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.nationalId}
+                  onChange={e => update("nationalId", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div style={{ marginBottom: "0.75rem" }}>
-                <label style={labelStyle}>KRA PIN <span style={{ color: "#999", fontWeight: 400 }}>(optional)</span></label>
-                <input value={form.kraPin} onChange={e => update("kraPin", e.target.value)} style={inputStyle} />
+                <label style={labelStyle}>
+                  KRA PIN{" "}
+                  <span style={{ color: "#999", fontWeight: 400 }}>(optional)</span>
+                </label>
+                <input
+                  value={form.kraPin}
+                  onChange={e => update("kraPin", e.target.value)}
+                  style={inputStyle}
+                />
               </div>
               <div style={{ marginBottom: "0.75rem" }}>
-                <label style={labelStyle}>Employer <span style={{ color: "#999", fontWeight: 400 }}>(optional)</span></label>
-                <input value={form.employer} onChange={e => update("employer", e.target.value)} style={inputStyle} />
+                <label style={labelStyle}>
+                  Employer{" "}
+                  <span style={{ color: "#999", fontWeight: 400 }}>(optional)</span>
+                </label>
+                <input
+                  value={form.employer}
+                  onChange={e => update("employer", e.target.value)}
+                  style={inputStyle}
+                />
               </div>
             </div>
 
             <div style={{ marginBottom: "0.75rem" }}>
               <label style={labelStyle}>Password</label>
-              <input type="password" value={form.password} onChange={e => update("password", e.target.value)} placeholder="Min 8 chars, 1 uppercase, 1 number" style={inputStyle} />
+              <input
+                type="password"
+                value={form.password}
+                onChange={e => update("password", e.target.value)}
+                placeholder="Min 8 chars, 1 uppercase, 1 number"
+                style={inputStyle}
+                required
+              />
             </div>
 
             {sectionLabel("Next of kin", RED)}
@@ -136,19 +192,39 @@ export default function Register() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={{ ...labelStyle, color: RED }}>Full name</label>
-                <input value={form.nextOfKin.fullName} onChange={e => updateKin("fullName", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.nextOfKin.fullName}
+                  onChange={e => updateKin("fullName", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={{ ...labelStyle, color: RED }}>Relationship</label>
-                <input value={form.nextOfKin.relationship} onChange={e => updateKin("relationship", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.nextOfKin.relationship}
+                  onChange={e => updateKin("relationship", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={{ ...labelStyle, color: RED }}>Phone</label>
-                <input value={form.nextOfKin.phone} onChange={e => updateKin("phone", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.nextOfKin.phone}
+                  onChange={e => updateKin("phone", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={{ ...labelStyle, color: RED }}>National ID</label>
-                <input value={form.nextOfKin.nationalId} onChange={e => updateKin("nationalId", e.target.value)} style={inputStyle} />
+                <input
+                  value={form.nextOfKin.nationalId}
+                  onChange={e => updateKin("nationalId", e.target.value)}
+                  style={inputStyle}
+                  required
+                />
               </div>
             </div>
 
@@ -163,7 +239,10 @@ export default function Register() {
 
           <div style={{ textAlign: "center", marginTop: "1rem", paddingTop: "12px", borderTop: "1px solid #eee" }}>
             <p style={{ fontSize: "13px", color: "#666" }}>
-              Already have an account? <Link to="/" style={{ color: ORANGE, fontWeight: 600 }}>Sign in</Link>
+              Already have an account?{" "}
+              <Link to="/" style={{ color: ORANGE, fontWeight: 600 }}>
+                Sign in
+              </Link>
             </p>
           </div>
         </div>
