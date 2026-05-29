@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import Logo from "./logo";
 
-const GREEN = "#1A6B52";
+const  GREEN = "#02882f";
 const RED = "#C0202A";
 const ORANGE = "#E8601A";
 const BLACK = "#1A1A1A";
