@@ -307,3 +307,134 @@ export const updateMemberStatus = async (
     data: { status },
   });
 };
+
+// ── LOANS ─────────────────────────────────────────────────────────────────
+export const getAllLoans = async () => {
+  return await prisma.loan.findMany({
+    include: {
+      member: {
+        select: {
+          memberNumber: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+        },
+      },
+      guarantors: {
+        include: {
+          guarantor: {
+            select: {
+              memberNumber: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+      repayments: true,
+      penalties: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+export const updateLoanStatus = async (
+  loanId: string,
+  status: "APPROVED" | "REJECTED" | "DISBURSED" | "COMPLETED" | "DEFAULTED",
+  disbursedAt?: Date,
+  dueDate?: Date,
+) => {
+  const loan = await prisma.loan.findUnique({ where: { id: loanId } });
+  if (!loan) throw new Error("Loan not found");
+
+  return await prisma.loan.update({
+    where: { id: loanId },
+    data: {
+      status,
+      ...(disbursedAt && { disbursedAt }),
+      ...(dueDate && { dueDate }),
+    },
+  });
+};
+
+// ── SAVINGS ───────────────────────────────────────────────────────────────
+export const getAllSavings = async () => {
+  return await prisma.saving.findMany({
+    include: {
+      member: {
+        select: {
+          memberNumber: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+// ── SHARES ────────────────────────────────────────────────────────────────
+export const getAllShares = async () => {
+  return await prisma.share.findMany({
+    include: {
+      member: {
+        select: {
+          memberNumber: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+// ── PENALTIES ─────────────────────────────────────────────────────────────
+export const getAllPenalties = async () => {
+  return await prisma.penalty.findMany({
+    include: {
+      loan: {
+        include: {
+          member: {
+            select: {
+              memberNumber: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+export const markPenaltyPaid = async (penaltyId: string) => {
+  const penalty = await prisma.penalty.findUnique({
+    where: { id: penaltyId },
+  });
+  if (!penalty) throw new Error("Penalty not found");
+  if (penalty.isPaid) throw new Error("Penalty already paid");
+
+  return await prisma.penalty.update({
+    where: { id: penaltyId },
+    data: { isPaid: true },
+  });
+};
+
+// ── TRANSACTIONS ──────────────────────────────────────────────────────────
+export const getAllTransactions = async () => {
+  return await prisma.transaction.findMany({
+    include: {
+      member: {
+        select: {
+          memberNumber: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
